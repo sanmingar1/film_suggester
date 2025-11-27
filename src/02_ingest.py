@@ -11,7 +11,7 @@ PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)  # Directorio padre de 'src'
 CSV_FILE = os.path.join(PROJECT_ROOT, 'data', 'movies_clean.csv')
 CHROMA_DB_DIR = os.path.join(PROJECT_ROOT, 'chroma_db')
 COLLECTION_NAME = 'movies'
-MODEL_NAME = 'intfloat/multilingual-e5-base'  # Modelo multilingüe de alta calidad
+MODEL_NAME = 'BAAI/bge-m3'  # Modelo SOTA multilingüe (mejor rendimiento)
 MAX_MOVIES = 50000
 
 def ingest_movies():
@@ -73,8 +73,8 @@ def ingest_movies():
         batch_df = df.iloc[i:i+batch_size]
         
         # Generar embeddings para este lote
-        # IMPORTANTE: multilingual-e5 requiere prefijo "passage: " para documentos
-        texts = [f"passage: {t}" for t in batch_df['text_to_embed'].tolist()]
+        # NOTA: bge-m3 no requiere prefijos especiales
+        texts = batch_df['text_to_embed'].tolist()
         embeddings = model.encode(texts, show_progress_bar=False)
         
         # Preparar datos para ChromaDB

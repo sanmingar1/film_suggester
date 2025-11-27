@@ -83,8 +83,8 @@ def load_models():
     """
     # Añadir print para invalidar cache si cambia el código
     print("🔄 (Re)Cargando modelos y conexión a DB...")
-    # Modelo multilingüe de alta calidad para búsqueda semántica
-    model = SentenceTransformer('intfloat/multilingual-e5-base')
+    # Modelo SOTA multilingüe para búsqueda semántica
+    model = SentenceTransformer('BAAI/bge-m3')
     
     # Conectar a ChromaDB
     client = chromadb.PersistentClient(path='./chroma_db')
@@ -123,8 +123,8 @@ if query:
     # PASO 2: Búsqueda semántica con query optimizada
     with st.spinner("🎬 Buscando las mejores coincidencias..."):
         # Convertir consulta OPTIMIZADA a vector
-        # IMPORTANTE: multilingual-e5 requiere prefijo "query: "
-        query_embedding = model.encode(f"query: {optimized_query}").tolist()
+        # NOTA: bge-m3 no requiere prefijos especiales
+        query_embedding = model.encode(optimized_query).tolist()
         
         try:
             # Buscar en ChromaDB (pedir 20 para re-ranking)
