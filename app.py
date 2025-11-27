@@ -84,7 +84,7 @@ def load_models():
     # Añadir print para invalidar cache si cambia el código
     print("🔄 (Re)Cargando modelos y conexión a DB...")
     # Modelo SOTA para RAG multilingüe: 10x más rápido, soporta hasta 8192 tokens
-    model = SentenceTransformer('Alibaba-NLP/gte-multilingual-base')
+    model = SentenceTransformer('Alibaba-NLP/gte-multilingual-base', trust_remote_code=True)
     
     # Conectar a ChromaDB
     client = chromadb.PersistentClient(path='./chroma_db')

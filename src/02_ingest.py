@@ -40,7 +40,7 @@ def ingest_movies():
     # 3. Cargar modelo de embeddings
     print(f"\n🤖 Cargando modelo de embeddings: {MODEL_NAME}")
     print("   (Esto puede tardar un poco la primera vez...)")
-    model = SentenceTransformer(MODEL_NAME)
+    model = SentenceTransformer(MODEL_NAME, trust_remote_code=True)
     print("   ✅ Modelo cargado correctamente")
     
     # 4. Inicializar ChromaDB con persistencia
