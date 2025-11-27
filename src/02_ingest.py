@@ -11,7 +11,7 @@ PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)  # Directorio padre de 'src'
 CSV_FILE = os.path.join(PROJECT_ROOT, 'data', 'movies_clean.csv')
 CHROMA_DB_DIR = os.path.join(PROJECT_ROOT, 'chroma_db')
 COLLECTION_NAME = 'movies'
-MODEL_NAME = 'BAAI/bge-m3'  # Modelo SOTA multilingüe (mejor rendimiento)
+MODEL_NAME = 'Alibaba-NLP/gte-multilingual-base'  # SOTA para RAG multilingüe, 10x más rápido
 MAX_MOVIES = 50000
 
 def ingest_movies():
@@ -40,7 +40,7 @@ def ingest_movies():
     # 3. Cargar modelo de embeddings
     print(f"\n🤖 Cargando modelo de embeddings: {MODEL_NAME}")
     print("   (Esto puede tardar un poco la primera vez...)")
-    model = SentenceTransformer(MODEL_NAME)
+    model = SentenceTransformer(MODEL_NAME, trust_remote_code=True)
     print("   ✅ Modelo cargado correctamente")
     
     # 4. Inicializar ChromaDB con persistencia
@@ -71,9 +71,8 @@ def ingest_movies():
     
     for i in range(0, total_movies, batch_size):
         batch_df = df.iloc[i:i+batch_size]
-        
+
         # Generar embeddings para este lote
-        # NOTA: bge-m3 no requiere prefijos especiales
         texts = batch_df['text_to_embed'].tolist()
         embeddings = model.encode(texts, show_progress_bar=False)
         
