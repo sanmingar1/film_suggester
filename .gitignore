@@ -4,9 +4,12 @@ __pycache__/
 venv/
 .env
 
-# Data (large files)
+# Data (large CSVs, but keep chroma_db for deployment)
 data/*.csv
-chroma_db/
 
 # OS
 .DS_Store
+
+# Logs
+*.log
+ingestion_log.txt

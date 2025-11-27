@@ -11,8 +11,8 @@ PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)  # Directorio padre de 'src'
 CSV_FILE = os.path.join(PROJECT_ROOT, 'data', 'movies_clean.csv')
 CHROMA_DB_DIR = os.path.join(PROJECT_ROOT, 'chroma_db')
 COLLECTION_NAME = 'movies'
-MODEL_NAME = 'Alibaba-NLP/gte-multilingual-base'  # SOTA para RAG multilingüe, 10x más rápido
-MAX_MOVIES = 50000
+MODEL_NAME = 'intfloat/multilingual-e5-base'  # Modelo equilibrado (buena calidad + estable)
+MAX_MOVIES = 5000  # Reducido para deployment (más rápido, menos memoria)
 
 def ingest_movies():
     """

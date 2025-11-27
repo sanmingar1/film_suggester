@@ -1,16 +1,25 @@
 import streamlit as st
+import os
+import sys
+from pathlib import Path
 from sentence_transformers import SentenceTransformer
 import chromadb
-import sys
-import os
 
-# Añadir src al path para imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+# Añadir el directorio src al path para imports
+sys.path.insert(0, str(Path(__file__).parent / 'src'))
+
+# Auto-setup para HF Spaces (solo primera vez)
+if not Path("chroma_db").exists() or not any(Path("chroma_db").iterdir()):
+    with st.spinner("🔧 Inicializando base de datos (solo primera vez, ~2 min)..."):
+        import subprocess
+        subprocess.run([sys.executable, "setup.py"], check=False)
+
+# Importar funciones de LLM
 from llm_integration import enrich_movie_recommendations, optimize_search_query
 
-# Configuración de la página
+# Configuración de página
 st.set_page_config(
-    page_title="🎬 Buscador de Películas",
+    page_title="Film Suggester AI",
     page_icon="🎬",
     layout="wide"
 )

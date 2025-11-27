@@ -4,11 +4,17 @@ Módulo para integración con NVIDIA NIMs LLM
 from openai import OpenAI
 import os
 
-# Configuración de NVIDIA NIMs
-NVIDIA_API_KEY = "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"
-NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1"
-MODEL_NAME = "deepseek-ai/deepseek-r1"  # Modelo más accesible
-EMBEDDING_MODEL = "paraphrase-multilingual-MiniLM-L12-v2"  # Modelo multilingüe para español
+# Intentar cargar desde Streamlit secrets (para HF Spaces)
+try:
+    import streamlit as st
+    NVIDIA_API_KEY = st.secrets.get("NVIDIA_API_KEY", os.getenv("NVIDIA_API_KEY", ""))
+    NVIDIA_BASE_URL = st.secrets.get("NVIDIA_BASE_URL", os.getenv("NVIDIA_BASE_URL", "https://integrate.api.nvidia.com/v1"))
+except:
+    # Fallback a variables de entorno (desarrollo local)
+    NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
+    NVIDIA_BASE_URL = os.getenv("NVIDIA_BASE_URL", "https://integrate.api.nvidia.com/v1")
+
+MODEL_NAME = "deepseek-ai/deepseek-r1"  # Modelo LLM
 
 def get_llm_client():
     """Crea y retorna cliente de NVIDIA NIMs"""
