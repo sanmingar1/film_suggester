@@ -9,7 +9,7 @@ print("🧪 TEST RANKING: SIMILITUD + RATING")
 print("="*60)
 
 # Cargar modelo
-model = SentenceTransformer('intfloat/multilingual-e5-base')
+model = SentenceTransformer('Alibaba-NLP/gte-multilingual-base')
 client = chromadb.PersistentClient(path='./chroma_db')
 collection = client.get_collection(name='movies')
 

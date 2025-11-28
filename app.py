@@ -5,26 +5,16 @@ from pathlib import Path
 from sentence_transformers import SentenceTransformer
 import chromadb
 
-# Añadir el directorio src al path para imports
 sys.path.insert(0, str(Path(__file__).parent / 'src'))
 
-# Auto-setup para HF Spaces (solo primera vez)
-if not Path("chroma_db").exists() or not any(Path("chroma_db").iterdir()):
-    with st.spinner("🔧 Inicializando base de datos (solo primera vez, ~2 min)..."):
-        import subprocess
-        subprocess.run([sys.executable, "setup.py"], check=False)
-
-# Importar funciones de LLM
 from llm_integration import enrich_movie_recommendations, optimize_search_query
 
-# Configuración de página
 st.set_page_config(
     page_title="Film Suggester AI",
     page_icon="🎬",
     layout="wide"
 )
 
-# Estilos CSS personalizados
 st.markdown("""
     <style>
     .movie-card {
@@ -90,18 +80,14 @@ def load_models():
     Carga el modelo y conecta a ChromaDB.
     Se ejecuta solo una vez gracias a @st.cache_resource
     """
-    # Añadir print para invalidar cache si cambia el código
     print("🔄 (Re)Cargando modelos y conexión a DB...")
-    # Modelo SOTA para RAG multilingüe: 10x más rápido, soporta hasta 8192 tokens
     model = SentenceTransformer('Alibaba-NLP/gte-multilingual-base', trust_remote_code=True)
     
-    # Conectar a ChromaDB
     client = chromadb.PersistentClient(path='./chroma_db')
     collection = client.get_collection(name='movies')
     
     return model, collection
 
-# Cargar recursos (solo se ejecuta una vez)
 try:
     model, collection = load_models()
 except Exception as e:
@@ -121,7 +107,6 @@ query = st.text_input(
 
 # Búsqueda
 if query:
-    # PASO 1: Optimizar query con LLM
     with st.spinner("🤖 Optimizando tu búsqueda con IA..."):
         optimized_query = optimize_search_query(query)
     
@@ -129,13 +114,10 @@ if query:
     if optimized_query.lower().strip() != query.lower().strip():
         st.info(f"💡 **Query original:** {query}\n\n🎯 **Query optimizada por IA:** {optimized_query}")
     
-    # PASO 2: Búsqueda semántica con query optimizada
     with st.spinner("🎬 Buscando las mejores coincidencias..."):
-        # Convertir consulta OPTIMIZADA a vector
         query_embedding = model.encode(optimized_query).tolist()
         
         try:
-            # Buscar en ChromaDB (pedir 20 para re-ranking)
             results = collection.query(
                 query_embeddings=[query_embedding],
                 n_results=20
@@ -158,18 +140,11 @@ if query:
         for meta, dist in zip(raw_metadatas, raw_distances):
             similarity = max(0, 1 - dist)
             
-            # Obtener rating (prioridad: ml_rating > vote_average)
-            # Nota: ml_rating viene como 'rating' en metadata
             rating = float(meta.get('rating', 0.0))
             if rating == 0:
-                # Si no hay rating de usuarios, usar TMDB (escala 10 -> 5)
                 rating = float(meta.get('vote_average', 0.0)) / 2.0
-            
-            # Normalizar rating (0-1)
             norm_rating = min(max(rating / 5.0, 0), 1)
-            
-            # Score final: 60% similitud, 40% rating
-            # Esto asegura que salgan películas relevantes PERO buenas
+            #reranking 
             final_score = (similarity * 0.6) + (norm_rating * 0.4)
             
             scored_results.append({
@@ -178,11 +153,9 @@ if query:
                 'final_score': final_score,
                 'rating': rating
             })
-            
-        # Ordenar por score final descendente
+        
         scored_results.sort(key=lambda x: x['final_score'], reverse=True)
         
-        # Tomar top 6
         top_results = scored_results[:6]
         
         metadatas = [r['metadata'] for r in top_results]
@@ -199,7 +172,6 @@ if query:
                 'similarity': match_score
             })
         
-        # PASO 3: Generar recomendación con LLM
         with st.spinner("🤖 Generando recomendaciones personalizadas con IA..."):
             ai_recommendation = enrich_movie_recommendations(query, movie_results)
         
@@ -225,7 +197,6 @@ if query:
                     metadata = metadatas[idx]
                     distance = distances[idx]
                     
-                    # Calcular match score (1 - distance) * 100
                     match_score = max(0, (1 - distance) * 100)
                     
                     with cols[j]:
@@ -241,14 +212,12 @@ if query:
                         """
                         st.markdown(card_html, unsafe_allow_html=True)
                         
-                        # Expander para la sinopsis
                         with st.expander("📖 Leer trama"):
                             st.write(metadata['overview'])
         
     else:
         st.warning("⚠️ No se encontraron resultados")
 else:
-    # Mensaje inicial cuando no hay búsqueda
     st.info("👆 Escribe lo que buscas en el cuadro de búsqueda para comenzar")
     
     st.markdown("---")

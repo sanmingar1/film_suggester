@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Script de inicialización para Hugging Face Spaces.
-Se ejecuta automáticamente en el primer arranque para crear la base de datos.
+Script de inicialización de la base de datos.
+Ejecuta el proceso de ingesta si la base de datos no existe.
 """
 import os
 import subprocess
@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 
 def setup_database():
-    """Verifica y crea la base de datos si no existe"""
     
     chroma_db = Path("chroma_db")
     

@@ -33,7 +33,6 @@ def ingest_movies():
     df = pd.read_csv(CSV_FILE)
     print(f"   Total de películas disponibles: {len(df)}")
     
-    # Limitar a las primeras 1000 películas
     df = df.head(MAX_MOVIES)
     print(f"   Procesando las primeras {len(df)} películas")
     
@@ -47,7 +46,6 @@ def ingest_movies():
     print(f"\n💾 Inicializando ChromaDB en carpeta '{CHROMA_DB_DIR}'...")
     client = chromadb.PersistentClient(path=CHROMA_DB_DIR)
     
-    # Eliminar colección si ya existe (para evitar duplicados)
     try:
         client.delete_collection(name=COLLECTION_NAME)
         print(f"   ♻️  Colección '{COLLECTION_NAME}' existente eliminada")
@@ -72,7 +70,6 @@ def ingest_movies():
     for i in range(0, total_movies, batch_size):
         batch_df = df.iloc[i:i+batch_size]
 
-        # Generar embeddings para este lote
         texts = batch_df['text_to_embed'].tolist()
         embeddings = model.encode(texts, show_progress_bar=False)
         
@@ -88,7 +85,7 @@ def ingest_movies():
             }
             for _, row in batch_df.iterrows()
         ]
-        documents = texts  # El texto original también se guarda
+        documents = texts
         
         # Insertar en ChromaDB
         collection.add(
@@ -98,7 +95,6 @@ def ingest_movies():
             ids=ids
         )
         
-        # Mostrar progreso
         progress = min(i + batch_size, total_movies)
         percentage = (progress / total_movies) * 100
         print(f"   [{progress}/{total_movies}] {percentage:.1f}% completado")

@@ -64,8 +64,6 @@ def clean_and_combine_data():
     df_movies = pd.read_csv(MOVIES_FILE, low_memory=False)
     print(f"   ✅ Cargadas {len(df_movies):,} películas")
     
-    # Convertir 'id' a string para merge consistente
-    # IMPORTANTE: Limpiar IDs no numéricos y asegurar formato entero (862.0 -> 862)
     df_movies = df_movies[pd.to_numeric(df_movies['id'], errors='coerce').notnull()]
     df_movies['id'] = df_movies['id'].astype(float).astype(int).astype(str)
     
@@ -119,7 +117,6 @@ def clean_and_combine_data():
     print(f"   ❌ Removidas: {removed:,} películas sin overview")
     print(f"   ✅ Restantes: {len(df_movies):,} películas")
     
-    # 3. Cargar y procesar Ratings y Links (NUEVO)
     print("\n📊 Cargando ratings y links...")
     # try:
     # Cargar links para mapear MovieLens ID -> TMDB ID
@@ -160,12 +157,6 @@ def clean_and_combine_data():
     
     print(f"   ✅ Ratings integrados para {len(ratings_final):,} películas")
     
-    # except Exception as e:
-    #     print(f"   ⚠️ Error procesando ratings: {e}")
-    #     # Continuar sin ratings si falla
-    #     pass
-
-    # 4. Procesar campos JSON
     print("\n🔧 Procesando campos JSON...")
     
     # Extraer nombres de géneros
@@ -217,7 +208,6 @@ def clean_and_combine_data():
         if keywords:
             parts.append(f"Trata sobre: {keywords}.")
             
-        # Ratings (NUEVO)
         if pd.notna(row.get('ml_rating')) and row.get('ml_count', 0) > 10:
             rating = round(row['ml_rating'], 1)
             parts.append(f"Tiene una calificación de usuarios de {rating} sobre 5.")
@@ -228,16 +218,6 @@ def clean_and_combine_data():
             parts.append(f"{tagline}")
             
         return ' '.join(parts)
-        
-        # Keywords
-        if row.get('keywords_text', ''):
-            parts.append(f"Keywords: {row['keywords_text']}")
-        
-        # Tagline (si existe)
-        if pd.notna(row.get('tagline')) and row.get('tagline', '').strip():
-            parts.append(f"Tagline: {row['tagline']}")
-        
-        return ' | '.join(parts)
     
     df_movies['text_to_embed'] = df_movies.apply(create_enriched_text, axis=1)
     print("   ✅ Campo text_to_embed creado")
@@ -253,8 +233,8 @@ def clean_and_combine_data():
         'cast_text',
         'keywords_text',
         'vote_average',
-        'ml_rating',  # NUEVO
-        'ml_count',   # NUEVO
+        'ml_rating',
+        'ml_count',
         'text_to_embed'
     ]
     

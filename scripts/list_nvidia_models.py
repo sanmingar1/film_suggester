@@ -1,14 +1,19 @@
+#!/usr/bin/env python3
 """
 Script para listar modelos disponibles en NVIDIA NIMs
 """
+import os
 from openai import OpenAI
 
-NVIDIA_API_KEY = "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"
-NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1"
+NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
+if not NVIDIA_API_KEY:
+    raise ValueError("NVIDIA_API_KEY environment variable not set. Please set it before running this script.")
+
+BASE_URL = "https://integrate.api.nvidia.com/v1"
 
 try:
     client = OpenAI(
-        base_url=NVIDIA_BASE_URL,
+        base_url=BASE_URL,
         api_key=NVIDIA_API_KEY
     )
     
@@ -18,7 +23,6 @@ try:
     
     print(f"Total de modelos encontrados: {len(models.data)}\n")
     
-    # Buscar modelos de DeepSeek
     deepseek_models = [m for m in models.data if 'deepseek' in m.id.lower()]
     
     if deepseek_models:

@@ -1,15 +1,53 @@
 # Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 venv/
-.env
+env/
+.venv/
+*.egg-info/
+dist/
+build/
 
-# Data (large CSVs, but keep chroma_db for deployment)
+# Environment variables and secrets
+.env
+.env.local
+*.key
+*.pem
+
+# Data files (large CSVs)
 data/*.csv
+!data/.gitkeep
+
+# ChromaDB (will be generated on deployment)
+chroma_db/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
 # OS
 .DS_Store
+Thumbs.db
 
 # Logs
 *.log
 ingestion_log.txt
+
+# Temporary files
+*.tmp
+*.bak
+.cache/
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/

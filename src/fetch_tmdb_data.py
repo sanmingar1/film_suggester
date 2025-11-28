@@ -8,10 +8,10 @@ import requests
 import pandas as pd
 import json
 import time
+import os
 from pathlib import Path
 
-# Configuración
-TMDB_API_KEY = input("Ingresa tu TMDB API Key: ").strip()
+TMDB_API_KEY = os.getenv("TMDB_API_KEY") or input("Ingresa tu API key de TMDB: ").strip()
 BASE_URL = "https://api.themoviedb.org/3"
 DATA_DIR = Path(__file__).parent.parent / "data"
 
@@ -85,7 +85,7 @@ def fetch_movie_credits(movie_id):
         response.raise_for_status()
         data = response.json()
         return {
-            'cast': data.get('cast', [])[:5],  # Top 5 actores
+            'cast': data.get('cast', [])[:5],
             'crew': [c for c in data.get('crew', []) if c.get('job') == 'Director']
         }
     except Exception as e:
@@ -127,7 +127,7 @@ def create_keywords(movies):
     keywords_list = []
     for movie in movies:
         keywords = fetch_movie_keywords(movie['id'])
-        keywords_formatted = json.dumps([{'name': k['name']} for k in keywords[:5]])  # Top 5
+        keywords_formatted = json.dumps([{'name': k['name']} for k in keywords[:5]])
 
         keywords_list.append({
             'id': movie['id'],
@@ -207,7 +207,7 @@ def create_ratings(movies, num_users=50):
             rating = max(0.5, min(5.0, base_rating + variation))
             rating = round(rating * 2) / 2  # Redondear a .0 o .5
 
-            timestamp = int(time.time()) - random.randint(0, 31536000)  # Último año
+            timestamp = int(time.time()) - random.randint(0, 31536000)
 
             ratings_list.append({
                 'userId': user_id,
@@ -238,8 +238,7 @@ def main():
         print(f"   Detalle: {e}")
         return
 
-    # Obtener películas populares
-    movies = fetch_popular_movies(num_pages=10)  # ~200 películas
+    movies = fetch_popular_movies(num_pages=10)
 
     if not movies:
         print("❌ No se pudieron obtener películas")

@@ -4,15 +4,8 @@ Módulo para integración con NVIDIA NIMs LLM
 from openai import OpenAI
 import os
 
-# Intentar cargar desde Streamlit secrets (para HF Spaces)
-try:
-    import streamlit as st
-    NVIDIA_API_KEY = st.secrets.get("NVIDIA_API_KEY", os.getenv("NVIDIA_API_KEY", ""))
-    NVIDIA_BASE_URL = st.secrets.get("NVIDIA_BASE_URL", os.getenv("NVIDIA_BASE_URL", "https://integrate.api.nvidia.com/v1"))
-except:
-    # Fallback a variables de entorno (desarrollo local)
-    NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
-    NVIDIA_BASE_URL = os.getenv("NVIDIA_BASE_URL", "https://integrate.api.nvidia.com/v1")
+NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
+NVIDIA_BASE_URL = os.getenv("NVIDIA_BASE_URL", "https://integrate.api.nvidia.com/v1")
 
 MODEL_NAME = "deepseek-ai/deepseek-r1"  # Modelo LLM
 
@@ -26,7 +19,6 @@ def get_llm_client():
 def optimize_search_query(user_query):
     """
     Optimiza la query expandiéndola con términos relacionados.
-    El modelo multilingual-e5 funciona nativamente en español.
     
     Args:
         user_query: Query original del usuario
@@ -126,7 +118,7 @@ Sé conciso pero informativo (máximo 150 palabras)."""
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=2048,  # Aumentado para evitar cortes
+            max_tokens=2048,
             top_p=0.9
         )
         
@@ -144,13 +136,11 @@ Sé conciso pero informativo (máximo 150 palabras)."""
             if content:
                 return content
             else:
-                # Debug: mostrar la estructura de la respuesta
                 return f"⚠️ Respuesta recibida pero sin contenido. Estructura: {str(message)[:200]}"
         else:
             return "⚠️ No se recibió respuesta válida del modelo"
     
     except Exception as e:
-        # Mostrar error más detallado
         import traceback
         error_detail = traceback.format_exc()
         return f"⚠️ Error al generar recomendación: {str(e)}\n\nDetalle: {error_detail[:300]}"
