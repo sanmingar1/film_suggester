@@ -31,7 +31,7 @@ Y devuelve recomendaciones relevantes junto con análisis generado por modelos d
 ## ✨ Características Principales
 
 ### 🔍 Búsqueda Semántica Multilingüe
-- Modelo `multilingual-e5-base` para búsqueda vectorial en español e inglés
+- Modelo `Alibaba-NLP/gte-multilingual-base` para búsqueda vectorial en español e inglés
 - Comprensión del contexto y significado, no solo palabras clave
 - Soporte para descripciones abstractas y consultas complejas
 
@@ -117,7 +117,7 @@ Y devuelve recomendaciones relevantes junto con análisis generado por modelos d
 - **Pandas**: Procesamiento y limpieza de datos
 
 ### Modelos de IA
-- **multilingual-e5-base**: Modelo de embeddings multilingüe (Inglés/Español)
+- **Alibaba-NLP/gte-multilingual-base**: Modelo de embeddings multilingüe (Inglés/Español)
 - **NVIDIA NIMs API**: Infraestructura para modelos de lenguaje
 - **DeepSeek-R1**: Modelo LLM para optimización y análisis
 
@@ -205,7 +205,7 @@ python src/02_ingest.py
 ```
 
 Este script:
-- Carga el modelo `multilingual-e5-base`
+- Carga el modelo `Alibaba-NLP/gte-multilingual-base`
 - Genera embeddings para todas las películas
 - Almacena vectores en ChromaDB
 - Crea el directorio `chroma_db/`
@@ -288,7 +288,7 @@ movies_clean.csv
    v
 [02_ingest.py]
    │
-   ├─ Carga modelo multilingual-e5-base
+   ├─ Carga modelo Alibaba-NLP/gte-multilingual-base
    ├─ Genera embeddings (768 dimensiones)
    ├─ Almacena en ChromaDB
    │   └─ Índice HNSW para búsqueda rápida
@@ -437,8 +437,8 @@ Este proyecto está bajo la Licencia MIT. Ver archivo LICENSE para más detalles
 - **TMDB**: Por los metadatos completos de películas
   - [themoviedb.org](https://www.themoviedb.org/)
   
-- **Equipo de Sentence Transformers**: Por el modelo multilingual-e5
-  - [huggingface.co/intfloat/multilingual-e5-base](https://huggingface.co/intfloat/multilingual-e5-base)
+- **Equipo de Alibaba NLP**: Por el modelo gte-multilingual-base
+  - [huggingface.co/Alibaba-NLP/gte-multilingual-base](https://huggingface.co/Alibaba-NLP/gte-multilingual-base)
   
 - **NVIDIA**: Por proporcionar acceso a NIMs API y modelos LLM
   - [nvidia.com/en-us/ai/](https://www.nvidia.com/en-us/ai/)
